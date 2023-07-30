@@ -21,19 +21,19 @@ public class DesignSteps {
     public void definesARecipeCalled(String username, String recipeName) {
         RecipeId recipeId = RecipeId.generate();
         CreateEmpty createEmptyRecipe = new CreateEmpty(recipeId, recipeName, username);
+
         commandGateway.send(createEmptyRecipe);
+
         context.rememberRecipe(recipeName, recipeId);
     }
 
     @And("{string} adds a {int} min \\(moment) called {string} to {string}")
     public void addsAMinMomentCalledTo(String username, int minutes, String momentName, String recipeName) {
-
         RecipeId recipeId = context.retrieveRecipeId(recipeName);
         Duration momentDuration = Duration.ofMinutes(minutes);
         AddMoment addMoment = new AddMoment(recipeId, momentName, momentDuration);
 
         commandGateway.send(addMoment);
-
     }
 
     @Then("recipe {string} should include {int} \\(moments)")
@@ -43,7 +43,7 @@ public class DesignSteps {
     }
 
     @And("time allocated for a {string} should be {int} hour")
-    public void timeAllocatedForAShouldBeHour(String arg0, int arg1) {
+    public void timeAllocatedForAShouldBeHour(String activityName, int allocatedMinutes) {
         // Write code here that turns the phrase above into concrete actions
         throw new io.cucumber.java.PendingException();
     }

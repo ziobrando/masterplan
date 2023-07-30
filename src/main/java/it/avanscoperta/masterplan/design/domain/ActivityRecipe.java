@@ -31,7 +31,7 @@ public class ActivityRecipe {
 
     }
 
-    public static ActivityRecipe fromPrimary(CreateFromKeyMoment command) {
+    public static ActivityRecipe fromKeyMoment(CreateFromKeyMoment command) {
         ActivityRecipe recipe = new ActivityRecipe(
                 command.recipeId(),
                 command.recipeName(),
@@ -46,6 +46,11 @@ public class ActivityRecipe {
         this.primary = moment; // First dumb idea,
     }
 
+    public void addMoment(Moment moment, TemporalRelationship temporalRelationship) {
+        // TODO: fix the relative offset here.
+        this.moments.add(moment);
+    }
+
     public String getRecipeName() {
         return this.recipeName;
     }
@@ -56,4 +61,6 @@ public class ActivityRecipe {
                 .map(Moment::duration)
                 .reduce(Duration.ZERO, Duration::plus);
     }
+
+
 }
