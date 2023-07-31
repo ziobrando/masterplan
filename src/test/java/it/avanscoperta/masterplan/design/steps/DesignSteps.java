@@ -83,4 +83,12 @@ public class DesignSteps {
         assertEquals(expected, recipe.getOverallDuration());
     }
 
+    @And("footprint for {string} should start {int} minutes before the official start")
+    public void footprintShouldStartMinutesBeforeTheOfficialStart(String recipeName, int minutesBeforeStart) {
+        RecipeId recipeId = context.retrieveRecipeId(recipeName);
+        ActivityRecipe recipe = activityRecipeRepository.findById(recipeId).get();
+        Duration expectedOffset = Duration.ZERO.minusMinutes(minutesBeforeStart);
+        assertEquals(expectedOffset, recipe.getOffsetBeforeStart());
+
+    }
 }

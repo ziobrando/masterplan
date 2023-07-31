@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -19,7 +20,7 @@ public class ActivityRecipe {
     private final String recipeName;
     private final String username;
 
-    private List<Moment> moments = new ArrayList<>();
+    private List<PlannedMoment> moments = new ArrayList<>();
     private Moment primary;
 
     private ActivityRecipe(RecipeId recipeId, String recipeName, String username) {
@@ -48,12 +49,14 @@ public class ActivityRecipe {
     }
 
     private void addPrimaryMoment(Moment moment) {
-        this.moments.add(moment);
+        this.moments.add(new PlannedMoment(moment, Duration.ZERO));
         this.primary = moment; // First dumb idea,
     }
 
     public void addMoment(AddMoment addMoment) {
-        this.moments.add(addMoment.moment());
+        if (primary == null) primary = addMoment.moment();
+        Duration relativeOffset = addMoment.getRelativeOffset(this.primary);
+        this.moments.add(new PlannedMoment(addMoment.moment(), relativeOffset));
     }
 
     public String getRecipeName() {
@@ -63,12 +66,21 @@ public class ActivityRecipe {
     public Duration getOverallDuration() {
         return moments
                 .stream()
+                .map(PlannedMoment::moment)
                 .map(Moment::duration)
                 .reduce(Duration.ZERO, Duration::plus);
     }
 
 
-    public List<Moment> getMoments() {
+    public List<PlannedMoment> getMoments() {
         return this.moments;
+    }
+
+    public Duration getOffsetBeforeStart() {
+        return moments.stream()
+                .sorted(Comparator.comparing(PlannedMoment::relativeOffset))
+                .findFirst()
+                .get()
+                .relativeOffset();
     }
 }

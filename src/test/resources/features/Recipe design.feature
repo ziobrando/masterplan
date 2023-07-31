@@ -18,4 +18,5 @@ Feature: Recipe design
     And "Mario" adds a 15 min (moment) called "Preparation" right before "Commercial Call"
     Then recipe "Commercial Call" should include 3 (moments)
     And time allocated for a "Commercial Call" should be 1 hour and 30 minutes
+    And footprint for "Commercial Call" should start 15 minutes before the official start
 
