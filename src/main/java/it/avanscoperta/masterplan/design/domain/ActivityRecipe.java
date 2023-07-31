@@ -1,5 +1,9 @@
 package it.avanscoperta.masterplan.design.domain;
 
+import it.avanscoperta.masterplan.design.steps.AddMoment;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,8 +11,10 @@ import java.util.List;
 /**
  * This is a State-Based Aggregate
  */
+@Document(collection = "Activity Recipe")
 public class ActivityRecipe {
 
+    @Id
     private final RecipeId recipeId;
     private final String recipeName;
     private final String username;
@@ -46,9 +52,8 @@ public class ActivityRecipe {
         this.primary = moment; // First dumb idea,
     }
 
-    public void addMoment(Moment moment, TemporalRelationship temporalRelationship) {
-        // TODO: fix the relative offset here.
-        this.moments.add(moment);
+    public void addMoment(AddMoment addMoment) {
+        this.moments.add(addMoment.moment());
     }
 
     public String getRecipeName() {
@@ -63,4 +68,7 @@ public class ActivityRecipe {
     }
 
 
+    public List<Moment> getMoments() {
+        return this.moments;
+    }
 }

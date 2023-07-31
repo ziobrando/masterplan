@@ -1,5 +1,6 @@
 package it.avanscoperta.masterplan.design.domain;
 
+import it.avanscoperta.masterplan.design.steps.AddMoment;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,7 @@ public class ActivityRecipeTest {
         createEmpty = new CreateEmpty(recipeId, recipeName, username);
         emptyRecipe = ActivityRecipe.createEmpty(createEmpty);
         callDuration = Duration.ofMinutes(45);
+        call = new Moment("call", callDuration);
     }
 
     @Test
@@ -45,7 +47,6 @@ public class ActivityRecipeTest {
     @Test
     @DisplayName("Can create from a key moment")
     void can_create_from_a_primary_moment() {
-        call = new Moment("call", callDuration);
         CreateFromKeyMoment createFromKeyMoment = new CreateFromKeyMoment(recipeId, recipeName, username, call);
 
         ActivityRecipe singleMomentRecipe = ActivityRecipe.fromKeyMoment(createFromKeyMoment);
@@ -69,7 +70,6 @@ public class ActivityRecipeTest {
     @Test
     @DisplayName("Can add an extra moment")
     void can_add_an_extra_moment() {
-        call = new Moment("call", callDuration);
         CreateFromKeyMoment createFromKeyMoment = new CreateFromKeyMoment(recipeId, recipeName, username, call);
 
         ActivityRecipe singleMomentRecipe = ActivityRecipe.fromKeyMoment(createFromKeyMoment);
@@ -77,7 +77,7 @@ public class ActivityRecipeTest {
         Duration preparationDuration = Duration.ofMinutes(15);
         Moment preparation = new Moment("preparation", preparationDuration);
 
-        singleMomentRecipe.addMoment(preparation, TemporalRelationship.RIGHT_BEFORE);
+        singleMomentRecipe.addMoment(new AddMoment(recipeId, preparation, TemporalRelationship.RIGHT_BEFORE));
 
         assertNotNull(singleMomentRecipe);
         assertEquals(recipeName, singleMomentRecipe.getRecipeName());
@@ -87,7 +87,6 @@ public class ActivityRecipeTest {
     @Test
     @DisplayName("The extra moment increments the duration")
     void the_extra_moment_increments_duration() {
-        call = new Moment("call", callDuration);
         CreateFromKeyMoment createFromKeyMoment = new CreateFromKeyMoment(recipeId, recipeName, username, call);
 
         ActivityRecipe singleMomentRecipe = ActivityRecipe.fromKeyMoment(createFromKeyMoment);
@@ -95,7 +94,7 @@ public class ActivityRecipeTest {
         Duration preparationDuration = Duration.ofMinutes(15);
         Moment preparation = new Moment("preparation", preparationDuration);
 
-        singleMomentRecipe.addMoment(preparation, TemporalRelationship.RIGHT_BEFORE);
+        singleMomentRecipe.addMoment(new AddMoment(recipeId, preparation, TemporalRelationship.RIGHT_BEFORE));
 
         assertEquals(callDuration.plus(preparationDuration), singleMomentRecipe.getOverallDuration());
 

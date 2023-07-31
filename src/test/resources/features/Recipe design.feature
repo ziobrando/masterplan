@@ -7,7 +7,7 @@ Feature: Recipe design
     When "Mario" defines a recipe called "Standard Meeting"
     And "Mario" adds a 45 min (moment) called "Meeting" to "Standard Meeting"
     And "Mario" adds a 15 min (moment) called "Recovery" to "Standard Meeting"
-    Then recipe "Standard meeting" should include 2 (moments)
+    Then recipe "Standard Meeting" should include 2 (moments)
     And time allocated for a "Standard Meeting" should be 1 hour
 
 
