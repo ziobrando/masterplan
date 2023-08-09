@@ -2,11 +2,13 @@ package it.avanscoperta.masterplan.design.steps;
 
 import io.cucumber.java.en.*;
 import it.avanscoperta.masterplan.common.steps.ScenarioContext;
+import it.avanscoperta.masterplan.configuration.domain.UserId;
 import it.avanscoperta.masterplan.design.domain.*;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.Duration;
+import java.time.LocalTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -90,5 +92,16 @@ public class DesignSteps {
         Duration expectedOffset = Duration.ZERO.minusMinutes(minutesBeforeStart);
         assertEquals(expectedOffset, recipe.getOffsetBeforeStart());
 
+    }
+
+    @And("{string} defined a {string} constraint from {string} to {string}")
+    public void definedAConstraintFromTo(String username, String constraintName, String startTime, String endTime) {
+        ConstraintId constraintId = ConstraintId.generate();
+        UserId userId = UserId.generate();
+        LocalTime fromTime = LocalTime.parse(startTime);
+        LocalTime toTime = LocalTime.parse(endTime);
+        DefineConstraint defineConstraint = new DefineConstraint(constraintId, userId, constraintName, fromTime, toTime, ConstraintType.ONLY_HERE);
+
+        commandGateway.send(defineConstraint);
     }
 }
