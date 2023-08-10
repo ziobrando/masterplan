@@ -1,5 +1,6 @@
 package it.avanscoperta.masterplan.common.steps;
 
+import it.avanscoperta.masterplan.configuration.domain.UserId;
 import it.avanscoperta.masterplan.design.domain.RecipeId;
 import org.springframework.stereotype.Component;
 
@@ -16,5 +17,13 @@ public class ScenarioContext {
 
     public RecipeId retrieveRecipeId(String recipeName) {
         return (RecipeId) things.get(recipeName);
+    }
+
+    public void rememberUser(String username, UserId userId) {
+        things.put(username, userId);
+    }
+
+    public UserId retrieveUserId(String username) {
+        return (UserId) things.get(username);
     }
 }
