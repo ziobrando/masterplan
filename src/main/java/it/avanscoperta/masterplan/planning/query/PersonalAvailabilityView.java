@@ -1,14 +1,17 @@
 package it.avanscoperta.masterplan.planning.query;
 
 import it.avanscoperta.masterplan.configuration.domain.UserId;
-import it.avanscoperta.masterplan.planning.domain.PersonalAvailabilityId;
 import org.springframework.data.annotation.Id;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PersonalAvailabilityView {
 
     @Id
-    private PersonalAvailabilityId personalAvailabilityId;
+    private String personalAvailabilityId;
     private UserId userId;
+    List<AvailableDay> availableDays = new ArrayList<AvailableDay>();
 
     /**
      * TODO: this shouldn't be here.

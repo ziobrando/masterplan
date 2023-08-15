@@ -9,9 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.time.temporal.ChronoUnit;
 
 @DisplayName("[Masterplan | Planning]: PersonalAvailability Aggregate")
@@ -46,6 +44,7 @@ public class PersonalAvailabilityTest {
     }
 
     @Test
+    @DisplayName("Can register an event")
     void can_register_an_event() {
         Email userEmail = new Email("user@smartPlanner.com");
         String eventLabel = "Test Event";

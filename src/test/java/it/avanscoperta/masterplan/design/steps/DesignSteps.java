@@ -2,6 +2,7 @@ package it.avanscoperta.masterplan.design.steps;
 
 import io.cucumber.java.en.*;
 import it.avanscoperta.masterplan.common.steps.ScenarioContext;
+import it.avanscoperta.masterplan.configuration.domain.UserId;
 import it.avanscoperta.masterplan.design.domain.*;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,6 +90,15 @@ public class DesignSteps {
         ActivityRecipe recipe = activityRecipeRepository.findById(recipeId).get();
         Duration expectedOffset = Duration.ZERO.minusMinutes(minutesBeforeStart);
         assertEquals(expectedOffset, recipe.getOffsetBeforeStart());
+
+    }
+
+    @When("{string} sets up a {int} priority constraint for not working on weekends")
+    public void setsUpAPriorityConstraintForNotWorkingOnWeekends(String username, int priority) {
+        UserId userId = context.retrieveUserId(username);
+        AvailabilityConstraint constraint = new AvailabilityConstraint(); // FIXME: just a placeholder
+        DefineConstraint defineConstraint = new DefineConstraint(
+                userId, "Save the weekends", priority, constraint);
 
     }
 }

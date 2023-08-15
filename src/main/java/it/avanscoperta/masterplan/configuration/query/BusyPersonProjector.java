@@ -23,6 +23,6 @@ public class BusyPersonProjector {
                 event.userId(), event.username()
         );
         repository.save(busyPersonView);
-        logger.info("Saved busy person: " + busyPersonView.userId());
+        logger.info("Saved busy person: " + busyPersonView.getUserId());
     }
 }

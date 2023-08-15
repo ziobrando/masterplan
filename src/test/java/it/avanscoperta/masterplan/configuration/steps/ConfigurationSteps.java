@@ -12,6 +12,7 @@ import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ConfigurationSteps {
@@ -40,20 +41,31 @@ public class ConfigurationSteps {
     public void should_be_a_busy_person(String username) {
 
         UserId userId = context.retrieveUserId(username);
+
+        await().until(() ->
+                        busyPersonRepository.findById(userId).isPresent()
+                );
+
         BusyPersonView busyPersonView = busyPersonRepository.findById(userId).get();
-        assertEquals(username, busyPersonView.username());
+        assertEquals(username, busyPersonView.getUsername());
     }
 
     @Then("{string} should have an availability calendar")
     public void should_have_an_availability_calendar(String username) {
         UserId userId = context.retrieveUserId(username);
-        PersonalAvailabilityView personalAvailabilityView = personalAvailabilityRepository
-                .findOne(Example.of(new PersonalAvailabilityView().withUserId(userId))).get();
-        assertNotNull(personalAvailabilityView);
+
+        await().until(
+                () -> personalAvailabilityRepository.findOne(
+                        Example.of(new PersonalAvailabilityView().withUserId(userId)))
+                        .isPresent()
+        );
     }
 
 
-
-
-
+    @And("no calendar has been associated with {string}")
+    public void noCalendarHasBeenAssociatedWith(String username) {
+        UserId userId = context.retrieveUserId(username);
+        BusyPersonView busyPersonView = busyPersonRepository.findById(userId).get();
+        assertEquals(0, busyPersonView.externalCalendars().size());
+    }
 }
