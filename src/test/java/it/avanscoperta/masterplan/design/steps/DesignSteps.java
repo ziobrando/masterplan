@@ -8,6 +8,7 @@ import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.Duration;
+import java.time.LocalTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -100,5 +101,15 @@ public class DesignSteps {
         DefineConstraint defineConstraint = new DefineConstraint(
                 userId, "Save the weekends", priority, constraint);
 
+
+    @And("{string} defined a {string} constraint from {string} to {string}")
+    public void definedAConstraintFromTo(String username, String constraintName, String startTime, String endTime) {
+        ConstraintId constraintId = ConstraintId.generate();
+        UserId userId = UserId.generate();
+        LocalTime fromTime = LocalTime.parse(startTime);
+        LocalTime toTime = LocalTime.parse(endTime);
+        DefineConstraint defineConstraint = new DefineConstraint(constraintId, userId, constraintName, fromTime, toTime, ConstraintType.ONLY_HERE);
+
+        commandGateway.send(defineConstraint);
     }
 }

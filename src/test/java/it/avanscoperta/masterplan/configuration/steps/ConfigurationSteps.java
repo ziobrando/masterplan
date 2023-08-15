@@ -15,6 +15,11 @@ import org.springframework.data.domain.Example;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
 
+import io.cucumber.java.PendingException;
+import io.cucumber.java.en.*;
+import it.avanscoperta.masterplan.configuration.domain.PersonalCalendarRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+
 public class ConfigurationSteps {
 
     @Autowired
@@ -67,5 +72,5 @@ public class ConfigurationSteps {
         UserId userId = context.retrieveUserId(username);
         BusyPersonView busyPersonView = busyPersonRepository.findById(userId).get();
         assertEquals(0, busyPersonView.externalCalendars().size());
-    }
+
 }
