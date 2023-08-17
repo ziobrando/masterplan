@@ -20,7 +20,12 @@ public class PersonalAvailabilityProjector {
     @EventHandler
     public void handle(PersonalAvailabilityGenerated event) {
 
-        PersonalAvailabilityView personalAvailabilityView = new PersonalAvailabilityView();
+        PersonalAvailabilityView personalAvailabilityView = new PersonalAvailabilityView(
+                event.personalAvailabilityId().id(),
+                event.userId(),
+                event.planningHorizon()
+        );
+
         repository.save(personalAvailabilityView);
         logger.info("Saved personal availability: " + personalAvailabilityView);
     }

@@ -1,16 +1,49 @@
 package it.avanscoperta.masterplan.planning.steps;
 
 import io.cucumber.java.en.*;
+import it.avanscoperta.masterplan.common.steps.ScenarioContext;
+import it.avanscoperta.masterplan.configuration.domain.UserId;
+import it.avanscoperta.masterplan.planning.domain.PlannedActivity;
+import it.avanscoperta.masterplan.planning.query.PersonalAvailabilityRepository;
+import it.avanscoperta.masterplan.planning.query.PersonalAvailabilityView;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.time.Duration;
+
+import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PlanningSteps {
+
+    @Autowired
+    ScenarioContext context;
+
+    @Autowired
+    PersonalAvailabilityRepository personalAvailabilityRepository;
+
     @Then("{string} should be available for a meeting next {string}")
-    public void should_be_available_for_a_meeting_next(String string, String string2) {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+    public void should_be_available_for_a_meeting_next(String username, String weekday) {
+        UserId userId = context.retrieveUserId(username);
+
+        await()
+                .until(
+                        () ->
+                                personalAvailabilityRepository.findById(userId.id()).isPresent()
+                );
+        PersonalAvailabilityView personalAvailabilityView = personalAvailabilityRepository.findById(userId.id()).get();
+
+        PlannedActivity meeting = new PlannedActivity(Duration.ofMinutes(90));
+        assertTrue(personalAvailabilityView.isAvailableFor(meeting));
+
     }
 
     @Given("{string} is completely busy next week")
-    public void is_completely_busy_next_week(String string) {
+    public void is_completely_busy_next_week(String username) {
+
+        UserId userId = context.retrieveUserId(username);
+
+
+
         // Write code here that turns the phrase above into concrete actions
         throw new io.cucumber.java.PendingException();
     }

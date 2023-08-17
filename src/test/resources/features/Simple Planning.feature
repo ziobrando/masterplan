@@ -1,12 +1,9 @@
 Feature: Simple Planning
 
-
-  Scenario: Virgin users availability
-    Given "Freshman" is a registered user
-    And no calendar has been associated with "Freshman"
-    Then "Freshman" should be available for a meeting next "Monday"
-
-
+  Scenario: New users availability
+    Given "Justin Signed" is a registered user
+    And no calendar has been associated with "Justin Signed"
+    Then "Justin Signed" should be available for a meeting next "Monday"
 
   Scenario: Finding time for a commercial call
     Given "Mario" is a registered user

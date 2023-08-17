@@ -19,7 +19,8 @@ public class PersonalAvailability {
     PersonalAvailability(GeneratePersonalAvailability command) {
         apply(new PersonalAvailabilityGenerated(
                         command.personalAvailabilityId(),
-                        command.userId()
+                        command.userId(),
+                        command.planningHorizon()
                 )
         );
     }
@@ -34,6 +35,7 @@ public class PersonalAvailability {
         apply(new EventRegistered(
                 command.personalAvailabilityId(),
                 command.eventLabel(),
+                command.priority(),
                 command.eventParty(),
                 command.duration()
         ));
