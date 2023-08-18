@@ -1,6 +1,7 @@
 package it.avanscoperta.masterplan.design.steps;
 
 import io.cucumber.java.en.*;
+import it.avanscoperta.masterplan.common.domain.Priority;
 import it.avanscoperta.masterplan.common.steps.ScenarioContext;
 import it.avanscoperta.masterplan.configuration.domain.UserId;
 import it.avanscoperta.masterplan.design.domain.*;
@@ -8,7 +9,6 @@ import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.Duration;
-import java.time.LocalTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -95,11 +95,17 @@ public class DesignSteps {
     }
 
     @When("{string} sets up a {int} priority constraint for not working on weekends")
-    public void setsUpAPriorityConstraintForNotWorkingOnWeekends(String username, int priority) {
+    public void setsUpAPriorityConstraintForNotWorkingOnWeekends(String username, int priorityNumber) {
+        Priority priority = new Priority("test", priorityNumber);
         UserId userId = context.retrieveUserId(username);
         AvailabilityConstraint constraint = new AvailabilityConstraint(); // FIXME: just a placeholder
         DefineConstraint defineConstraint = new DefineConstraint(
                 userId, "Save the weekends", priority, constraint);
+
+        commandGateway.send(defineConstraint);
+
+        // Write code here that turns the phrase above into concrete actions
+        throw new io.cucumber.java.PendingException();
     }
 
 }

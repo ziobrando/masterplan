@@ -1,7 +1,7 @@
 package it.avanscoperta.masterplan.configuration.domain;
 
-import java.time.Duration;
+import it.avanscoperta.masterplan.common.domain.DaysDuration;
 
-public record PlanningHorizon(Duration duration) {
-    public static final PlanningHorizon DEFAULT = new PlanningHorizon(Duration.ofDays(15));
+public record PlanningHorizon(DaysDuration duration) {
+    public static final PlanningHorizon DEFAULT = new PlanningHorizon(DaysDuration.of(15));
 }

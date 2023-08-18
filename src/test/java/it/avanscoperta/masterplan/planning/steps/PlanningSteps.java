@@ -27,14 +27,12 @@ public class PlanningSteps {
 
         await()
                 .until(
-                        () ->
-                                personalAvailabilityRepository.findById(userId.id()).isPresent()
+                        () -> personalAvailabilityRepository.findByUserId(userId).isPresent()
                 );
-        PersonalAvailabilityView personalAvailabilityView = personalAvailabilityRepository.findById(userId.id()).get();
+        PersonalAvailabilityView personalAvailabilityView = personalAvailabilityRepository.findByUserId(userId).get();
 
         PlannedActivity meeting = new PlannedActivity(Duration.ofMinutes(90));
         assertTrue(personalAvailabilityView.isAvailableFor(meeting));
-
     }
 
     @Given("{string} is completely busy next week")

@@ -11,4 +11,10 @@ import java.time.LocalDate;
 public class AvailableDay {
     LocalDate day;
     EventsForDay eventsForDay;
+
+    public AvailableDay(LocalDate day) {
+        this.day = day;
+    }
+
+
 }

@@ -5,6 +5,9 @@ Feature: Simple Planning
     And no calendar has been associated with "Justin Signed"
     Then "Justin Signed" should be available for a meeting next "Monday"
 
+
+
+
   Scenario: Finding time for a commercial call
     Given "Mario" is a registered user
     And "Mario" is completely busy next week

@@ -9,4 +9,5 @@ import java.time.LocalDateTime;
  * @param toTime    the end of the interval
  */
 public record FixedTimeInterval(LocalDateTime fromTime, LocalDateTime toTime) {
+
 }

@@ -19,8 +19,8 @@ public class PersonalAvailabilityProjector {
 
     @EventHandler
     public void handle(PersonalAvailabilityGenerated event) {
-
-        PersonalAvailabilityView personalAvailabilityView = new PersonalAvailabilityView(
+        // TODO: maybe a place for a factory.
+        PersonalAvailabilityView personalAvailabilityView = new ClusteredPersonalAvailabilityView(
                 event.personalAvailabilityId().id(),
                 event.userId(),
                 event.planningHorizon()
