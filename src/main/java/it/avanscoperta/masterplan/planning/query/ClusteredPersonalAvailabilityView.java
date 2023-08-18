@@ -3,6 +3,7 @@ package it.avanscoperta.masterplan.planning.query;
 import it.avanscoperta.masterplan.configuration.domain.PlanningHorizon;
 import it.avanscoperta.masterplan.configuration.domain.UserId;
 import it.avanscoperta.masterplan.planning.domain.PlannedActivity;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;
@@ -11,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A somewhat sophisticated read model optimized for answering planning questions.
@@ -36,13 +38,14 @@ public class ClusteredPersonalAvailabilityView implements PersonalAvailabilityVi
     }
 
     public ClusteredPersonalAvailabilityView(
+            @NotNull
             String personalAvailabilityId,
             UserId userId,
             PlanningHorizon planningHorizon) {
         this.personalAvailabilityId = personalAvailabilityId;
         this.userId = userId;
         this.planningHorizon = planningHorizon;
-        initDays((int) planningHorizon.duration().days());
+        initDays(planningHorizon.duration().days());
     }
 
     private void initDays(int days) {
@@ -65,7 +68,15 @@ public class ClusteredPersonalAvailabilityView implements PersonalAvailabilityVi
 
     @Override
     public boolean isAvailableFor(PlannedActivity plannedActivity) {
-        logger.warn("Method isAvailableFor() hasn't been implemented yet.");
-        return false;
+        AtomicBoolean result = new AtomicBoolean(false);
+        availableDays.forEach(
+                (day) -> {
+                    if (day.hasRoomFor(plannedActivity)) {
+                        result.set(true);
+                        logger.debug("Found availability on day: " + day);
+                    }
+                }
+        );
+        return result.get();
     }
 }

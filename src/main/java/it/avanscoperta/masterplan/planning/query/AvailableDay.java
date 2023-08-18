@@ -1,5 +1,7 @@
 package it.avanscoperta.masterplan.planning.query;
 
+import it.avanscoperta.masterplan.planning.domain.PlannedActivity;
+
 import java.time.LocalDate;
 
 /**
@@ -17,4 +19,8 @@ public class AvailableDay {
     }
 
 
+    public boolean hasRoomFor(PlannedActivity plannedActivity) {
+        // FIXME: this calls for a Slot-based implementation.
+        return plannedActivity.duration().toMinutes() < 240;
+    }
 }
