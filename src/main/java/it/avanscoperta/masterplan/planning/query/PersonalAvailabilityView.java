@@ -7,4 +7,5 @@ public interface PersonalAvailabilityView {
     boolean isAvailableFor(PlannedActivity plannedActivity);
     UserId getUserId();
 
+    void reserveEvent(PlannedEvent plannedEvent);
 }

@@ -1,15 +1,17 @@
 package it.avanscoperta.masterplan.planning.query;
 
+import it.avanscoperta.masterplan.common.domain.Slot;
 import it.avanscoperta.masterplan.configuration.domain.PlanningHorizon;
 import it.avanscoperta.masterplan.configuration.domain.UserId;
 import it.avanscoperta.masterplan.planning.domain.PlannedActivity;
+import it.avanscoperta.masterplan.planning.domain.PlannedEventId;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -21,16 +23,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * answering those queries. However, this is not the whole story, and a continuous-time implementation
  * might turn out better.
  */
-@Document(collection = "Clustered Personal Availability")
-public class ClusteredPersonalAvailabilityView implements PersonalAvailabilityView {
+@Document(collection = "Continuous Personal Availability")
+public class ContinuousPersonalAvailabilityView implements PersonalAvailabilityView {
 
-    private static final Logger logger = LoggerFactory.getLogger(ClusteredPersonalAvailabilityView.class);
+    private static final Logger logger = LoggerFactory.getLogger(ContinuousPersonalAvailabilityView.class);
 
     @Id
     private String personalAvailabilityId;
     private UserId userId;
     private PlanningHorizon planningHorizon;
-    List<AvailableDay> availableDays = new ArrayList<>();
+    PlannedEvents plannedEvents;
 
     @Override
     public UserId getUserId() {
@@ -42,7 +44,7 @@ public class ClusteredPersonalAvailabilityView implements PersonalAvailabilityVi
         throw new RuntimeException("Not implemented");
     }
 
-    public ClusteredPersonalAvailabilityView(
+    public ContinuousPersonalAvailabilityView(
             @NotNull
             String personalAvailabilityId,
             UserId userId,
@@ -50,38 +52,36 @@ public class ClusteredPersonalAvailabilityView implements PersonalAvailabilityVi
         this.personalAvailabilityId = personalAvailabilityId;
         this.userId = userId;
         this.planningHorizon = planningHorizon;
-        initDays(planningHorizon.duration().days());
-    }
-
-    private void initDays(int days) {
-        for (int day=0; day <= days;  day++)
-        {
-            availableDays.add(new AvailableDay(LocalDate.now().plusDays(day)));
-        }
-        logger.debug("Added " + days + " empty days to personal availability");
-    }
-
-    /**
-     * TODO: this shouldn't be here.
-     * @param userId the <code>UserId</code> of the BusyPerson
-     * @return an instance to <code>this</code>
-     */
-    public PersonalAvailabilityView withUserId(UserId userId) {
-        this.userId = userId;
-        return this;
     }
 
     @Override
     public boolean isAvailableFor(PlannedActivity plannedActivity) {
         AtomicBoolean result = new AtomicBoolean(false);
-        availableDays.forEach(
-                (day) -> {
-                    if (day.hasRoomFor(plannedActivity)) {
-                        result.set(true);
-                        logger.debug("Found availability on day: " + day);
-                    }
-                }
+
+        LocalDateTime searchIntervalStart = LocalDateTime.now(); // TODO: add more flexibility;
+        LocalDateTime searchIntervalEnd = LocalDateTime.now().plusDays(planningHorizon.duration().days());
+
+        availableSlots(searchIntervalStart, searchIntervalEnd).forEach(
+                (slot) -> { if (slot.hasRoomFor(plannedActivity)) {
+                    result.set(true);
+                    logger.debug("Found availability on slot: " + slot);
+                }}
         );
+
         return result.get();
+    }
+
+    private Iterable<Slot> availableSlots(LocalDateTime from, LocalDateTime to) {
+        return plannedEvents.toAvailableSlots(from, to);
+    }
+
+    private class PlannedEvents {
+        List<PlannedEvents> plannedEvents = new ArrayList<>();
+
+        public Iterable<Slot> toAvailableSlots(LocalDateTime from, LocalDateTime to) {
+            List<Slot> slots = new ArrayList<>();
+            slots.add(new Slot(from, to));
+            return slots;
+        }
     }
 }

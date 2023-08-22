@@ -1,11 +1,14 @@
 package it.avanscoperta.masterplan.configuration.steps;
 
 import io.cucumber.java.en.*;
+import it.avanscoperta.masterplan.common.domain.Priority;
 import it.avanscoperta.masterplan.common.steps.ScenarioContext;
 import it.avanscoperta.masterplan.configuration.domain.RegisterUser;
 import it.avanscoperta.masterplan.configuration.domain.UserId;
 import it.avanscoperta.masterplan.configuration.query.BusyPersonRepository;
 import it.avanscoperta.masterplan.configuration.query.BusyPersonView;
+import it.avanscoperta.masterplan.design.domain.AvailabilityConstraint;
+import it.avanscoperta.masterplan.design.domain.DefineConstraint;
 import it.avanscoperta.masterplan.planning.query.PersonalAvailabilityRepository;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +80,19 @@ public class ConfigurationSteps {
 
         BusyPersonView busyPersonView = busyPersonRepository.findById(userId).get();
         assertEquals(0, busyPersonView.externalCalendars().size());
+    }
+
+    @Given("{string} defined a {string} constraint from {string} to {string}")
+    public void defined_a_constraint_from_to(String username, String constraintLabel, String firstDay, String lastDay) {
+        // Write code here that turns the phrase above into concrete actions
+        UserId userId = context.retrieveUserId(username);
+        Priority priority = Priority.STANDARD;
+
+        AvailabilityConstraint constraint = new AvailabilityConstraint();
+
+        DefineConstraint defineConstraint = new DefineConstraint(userId, constraintLabel, priority, constraint);
+
+        throw new io.cucumber.java.PendingException();
     }
 
 }

@@ -1,6 +1,7 @@
 package it.avanscoperta.masterplan.planning.steps;
 
 import io.cucumber.java.en.*;
+import it.avanscoperta.masterplan.common.domain.Priority;
 import it.avanscoperta.masterplan.common.steps.ScenarioContext;
 import it.avanscoperta.masterplan.configuration.domain.UserId;
 import it.avanscoperta.masterplan.planning.domain.PlannedActivity;
@@ -31,7 +32,7 @@ public class PlanningSteps {
                 );
         PersonalAvailabilityView personalAvailabilityView = personalAvailabilityRepository.findByUserId(userId).get();
 
-        PlannedActivity meeting = new PlannedActivity(Duration.ofMinutes(90));
+        PlannedActivity meeting = new PlannedActivity(Duration.ofMinutes(90), Priority.STANDARD);
         assertTrue(personalAvailabilityView.isAvailableFor(meeting));
     }
 

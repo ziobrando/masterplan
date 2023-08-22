@@ -7,6 +7,8 @@ package it.avanscoperta.masterplan.common.domain;
  */
 public record Priority(String label, int priority) {
 
+    public static final Priority STANDARD = new Priority("Standard", 50);
+
     public boolean trumps(Priority other) {
         return this.priority > other.priority();
     }
