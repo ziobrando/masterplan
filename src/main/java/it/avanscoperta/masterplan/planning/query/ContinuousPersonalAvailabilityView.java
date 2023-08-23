@@ -12,8 +12,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -32,7 +31,7 @@ public class ContinuousPersonalAvailabilityView implements PersonalAvailabilityV
     private String personalAvailabilityId;
     private UserId userId;
     private PlanningHorizon planningHorizon;
-    PlannedEvents plannedEvents;
+    PlannedEvents plannedEvents = new PlannedEvents();
 
     @Override
     public UserId getUserId() {
@@ -41,7 +40,7 @@ public class ContinuousPersonalAvailabilityView implements PersonalAvailabilityV
 
     @Override
     public void reserveEvent(PlannedEvent plannedEvent) {
-        throw new RuntimeException("Not implemented");
+        plannedEvents.add(plannedEvent);
     }
 
     public ContinuousPersonalAvailabilityView(
@@ -75,13 +74,26 @@ public class ContinuousPersonalAvailabilityView implements PersonalAvailabilityV
         return plannedEvents.toAvailableSlots(from, to);
     }
 
+
+    private class PlannedEventComparator implements Comparator<PlannedEvent> {
+        public int compare(PlannedEvent one, PlannedEvent another) {
+            return (one.fixedTimeInterval().fromTime().compareTo(another.fixedTimeInterval().fromTime()));
+        }
+    }
+
+
     private class PlannedEvents {
-        List<PlannedEvents> plannedEvents = new ArrayList<>();
+        SortedSet<PlannedEvent> plannedEvents = new TreeSet<>(new PlannedEventComparator());
 
         public Iterable<Slot> toAvailableSlots(LocalDateTime from, LocalDateTime to) {
             List<Slot> slots = new ArrayList<>();
             slots.add(new Slot(from, to));
             return slots;
+        }
+
+        public void add(PlannedEvent plannedEvent) {
+            plannedEvents.add(plannedEvent);
+
         }
     }
 }

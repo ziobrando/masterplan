@@ -39,7 +39,9 @@ public class ClusteredPersonalAvailabilityView implements PersonalAvailabilityVi
 
     @Override
     public void reserveEvent(PlannedEvent plannedEvent) {
-        throw new RuntimeException("Not implemented");
+        availableDays.stream()
+                .filter((day)-> plannedEvent.fixedTimeInterval().spansOver(day.day))
+                .forEach((day) -> day.reserveEvent(plannedEvent));
     }
 
     public ClusteredPersonalAvailabilityView(

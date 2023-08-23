@@ -9,4 +9,8 @@ import java.util.List;
  */
 public class EventsForDay {
     List<PlannedEvent> events = new ArrayList<>();
+
+    public void addEvent(PlannedEvent plannedEvent) {
+        events.add(plannedEvent);
+    }
 }

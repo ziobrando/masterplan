@@ -36,28 +36,6 @@ public class PersonalAvailabilityViewTest {
     /**
      * Current assumptions: I am writing tests for the expected Black Box behaviour.
      */
-
-    @Test
-    public void can_create_a_personal_availability() {
-        PersonalAvailabilityView view = new ClusteredPersonalAvailabilityView(
-                personalAvailabilityId.id(),
-                userId,
-                PlanningHorizon.DEFAULT
-        );
-        assertNotNull(view);
-    }
-
-    @Test
-    public void a_fresh_one_should_be_always_available() {
-        PersonalAvailabilityView view = new ClusteredPersonalAvailabilityView(
-                personalAvailabilityId.id(),
-                userId,
-                PlanningHorizon.DEFAULT
-        );
-        PlannedActivity plannedActivity = new PlannedActivity(Duration.ofHours(2), Priority.STANDARD);
-        assertTrue(view.isAvailableFor(plannedActivity));
-    }
-
     private static Stream<Arguments> alternativeImplementations() {
 
         return Stream.of(
@@ -65,19 +43,37 @@ public class PersonalAvailabilityViewTest {
                                 PersonalAvailabilityId.generate().id(),
                                 UserId.generate(),
                                 PlanningHorizon.DEFAULT
-                        ),
-                        Arguments.of(new ContinuousPersonalAvailabilityView(
-                                        PersonalAvailabilityId.generate().id(),
-                                        UserId.generate(),
-                                        PlanningHorizon.DEFAULT
-                                )
+                        )
+                ),
+                Arguments.of(new ContinuousPersonalAvailabilityView(
+                                PersonalAvailabilityId.generate().id(),
+                                UserId.generate(),
+                                PlanningHorizon.DEFAULT
                         )
                 )
+
         );
+    }
+
+
+    @ParameterizedTest
+    @MethodSource("alternativeImplementations")
+    @DisplayName("Can create a PersonalAvailabilityView")
+    public void can_create_a_personal_availability(PersonalAvailabilityView view) {
+        assertNotNull(view);
     }
 
     @ParameterizedTest
     @MethodSource("alternativeImplementations")
+    @DisplayName("A newly created one should have space available")
+    public void a_fresh_one_should_be_always_available(PersonalAvailabilityView view) {
+        PlannedActivity plannedActivity = new PlannedActivity(Duration.ofHours(2), Priority.STANDARD);
+        assertTrue(view.isAvailableFor(plannedActivity));
+    }
+
+    @ParameterizedTest
+    @MethodSource("alternativeImplementations")
+    @DisplayName("Can reserve an event")
     public void can_reserve_an_event(PersonalAvailabilityView view) {
         FixedTimeInterval tomorrowMorning = new FixedTimeInterval(
                 LocalDateTime.now().plusDays(1).withHour(9).truncatedTo(ChronoUnit.MINUTES),
