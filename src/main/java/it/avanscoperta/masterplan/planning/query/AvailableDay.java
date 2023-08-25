@@ -1,6 +1,8 @@
 package it.avanscoperta.masterplan.planning.query;
 
 import it.avanscoperta.masterplan.planning.domain.PlannedActivity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 
@@ -11,6 +13,7 @@ import java.time.LocalDate;
  * The alternative is to play on a continuum.
  */
 public class AvailableDay {
+    static Logger logger = LoggerFactory.getLogger(AvailableDay.class);
     LocalDate day;
     EventsForDay eventsForDay = new EventsForDay();
 
@@ -26,5 +29,6 @@ public class AvailableDay {
 
     public void reserveEvent(PlannedEvent plannedEvent) {
         eventsForDay.addEvent(plannedEvent);
+        logger.debug("Added event " + plannedEvent + " to " + day );
     }
 }

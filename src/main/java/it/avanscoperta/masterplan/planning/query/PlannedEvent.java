@@ -7,7 +7,4 @@ public record PlannedEvent (
         PlannedEventId plannedEventId,
         String label,
         FixedTimeInterval fixedTimeInterval) {
-
-
-
 }

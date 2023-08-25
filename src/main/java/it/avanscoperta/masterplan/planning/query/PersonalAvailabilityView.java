@@ -8,4 +8,6 @@ public interface PersonalAvailabilityView {
     UserId getUserId();
 
     void reserveEvent(PlannedEvent plannedEvent);
+
+    boolean includesEvent(PlannedEvent plannedEvent);
 }

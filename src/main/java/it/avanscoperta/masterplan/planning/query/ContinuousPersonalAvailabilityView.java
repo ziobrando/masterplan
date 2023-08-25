@@ -29,7 +29,7 @@ public class ContinuousPersonalAvailabilityView implements PersonalAvailabilityV
 
     @Id
     private String personalAvailabilityId;
-    private UserId userId;
+    private final UserId userId;
     private PlanningHorizon planningHorizon;
     PlannedEvents plannedEvents = new PlannedEvents();
 
@@ -41,6 +41,11 @@ public class ContinuousPersonalAvailabilityView implements PersonalAvailabilityV
     @Override
     public void reserveEvent(PlannedEvent plannedEvent) {
         plannedEvents.add(plannedEvent);
+    }
+
+    @Override
+    public boolean includesEvent(PlannedEvent plannedEvent) {
+            return plannedEvents.includes(plannedEvent);
     }
 
     public ContinuousPersonalAvailabilityView(
@@ -75,7 +80,7 @@ public class ContinuousPersonalAvailabilityView implements PersonalAvailabilityV
     }
 
 
-    private class PlannedEventComparator implements Comparator<PlannedEvent> {
+    private static class PlannedEventComparator implements Comparator<PlannedEvent> {
         public int compare(PlannedEvent one, PlannedEvent another) {
             return (one.fixedTimeInterval().fromTime().compareTo(another.fixedTimeInterval().fromTime()));
         }
@@ -94,6 +99,10 @@ public class ContinuousPersonalAvailabilityView implements PersonalAvailabilityV
         public void add(PlannedEvent plannedEvent) {
             plannedEvents.add(plannedEvent);
 
+        }
+
+        public boolean includes(PlannedEvent plannedEvent) {
+            return plannedEvents.contains(plannedEvent);
         }
     }
 }

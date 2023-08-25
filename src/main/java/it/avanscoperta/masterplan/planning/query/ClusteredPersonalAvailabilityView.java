@@ -44,6 +44,15 @@ public class ClusteredPersonalAvailabilityView implements PersonalAvailabilityVi
                 .forEach((day) -> day.reserveEvent(plannedEvent));
     }
 
+    @Override
+    public boolean includesEvent(PlannedEvent plannedEvent) {
+        return availableDays.stream()
+                .filter((day)-> day.day.isEqual(plannedEvent.fixedTimeInterval().fromTime().toLocalDate()))
+                .findFirst()
+                .get()
+                .eventsForDay.events.contains(plannedEvent);
+    }
+
     public ClusteredPersonalAvailabilityView(
             @NotNull
             String personalAvailabilityId,
