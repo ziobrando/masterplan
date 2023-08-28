@@ -1,16 +1,18 @@
 package it.avanscoperta.masterplan.planning.query;
 
+import it.avanscoperta.masterplan.common.domain.FixedTimeInterval;
 import it.avanscoperta.masterplan.common.domain.Slot;
 import it.avanscoperta.masterplan.configuration.domain.PlanningHorizon;
 import it.avanscoperta.masterplan.configuration.domain.UserId;
+import it.avanscoperta.masterplan.design.domain.AvailabilityConstraint;
 import it.avanscoperta.masterplan.planning.domain.PlannedActivity;
-import it.avanscoperta.masterplan.planning.domain.PlannedEventId;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -48,6 +50,12 @@ public class ContinuousPersonalAvailabilityView implements PersonalAvailabilityV
             return plannedEvents.includes(plannedEvent);
     }
 
+
+    @Override
+    public void registerConstraint(AvailabilityConstraint availabilityConstraint) {
+
+    }
+
     public ContinuousPersonalAvailabilityView(
             @NotNull
             String personalAvailabilityId,
@@ -59,13 +67,10 @@ public class ContinuousPersonalAvailabilityView implements PersonalAvailabilityV
     }
 
     @Override
-    public boolean isAvailableFor(PlannedActivity plannedActivity) {
+    public boolean isAvailableFor(PlannedActivity plannedActivity, RequestInterval requestInterval) {
         AtomicBoolean result = new AtomicBoolean(false);
 
-        LocalDateTime searchIntervalStart = LocalDateTime.now(); // TODO: add more flexibility;
-        LocalDateTime searchIntervalEnd = LocalDateTime.now().plusDays(planningHorizon.duration().days());
-
-        availableSlots(searchIntervalStart, searchIntervalEnd).forEach(
+        availableSlots(requestInterval.fixedTimeInterval()).forEach(
                 (slot) -> { if (slot.hasRoomFor(plannedActivity)) {
                     result.set(true);
                     logger.debug("Found availability on slot: " + slot);
@@ -75,8 +80,36 @@ public class ContinuousPersonalAvailabilityView implements PersonalAvailabilityV
         return result.get();
     }
 
-    private Iterable<Slot> availableSlots(LocalDateTime from, LocalDateTime to) {
-        return plannedEvents.toAvailableSlots(from, to);
+    @Override
+    public boolean isAvailableFor(PlannedActivity plannedActivity) {
+        return isAvailableFor(plannedActivity, defaultRequestInterval());
+    }
+
+    @Override
+    public Optional<Slot> firstAvailableSlot(PlannedActivity plannedActivity, RequestInterval requestInterval) {
+        return availableSlots(requestInterval.fixedTimeInterval())
+                .stream().sequential()
+                .filter((slot -> slot.hasRoomFor(plannedActivity)))
+                .findFirst();
+    }
+
+
+    @Override
+    public Optional<LocalDate> firstAvailableDate(PlannedActivity plannedActivity, RequestInterval requestInterval) {
+        return firstAvailableSlot(plannedActivity, requestInterval)
+                .map((slot -> slot.timeInterval().fromTime().toLocalDate()));
+    }
+
+
+
+    private RequestInterval defaultRequestInterval() {
+        return new RequestInterval(new FixedTimeInterval(
+                LocalDateTime.now(), LocalDateTime.now().plusDays(planningHorizon.duration().days())
+        ));
+    }
+
+    private List<Slot> availableSlots(FixedTimeInterval searchInterval) {
+        return plannedEvents.toAvailableSlots(searchInterval);
     }
 
 
@@ -90,9 +123,9 @@ public class ContinuousPersonalAvailabilityView implements PersonalAvailabilityV
     private class PlannedEvents {
         SortedSet<PlannedEvent> plannedEvents = new TreeSet<>(new PlannedEventComparator());
 
-        public Iterable<Slot> toAvailableSlots(LocalDateTime from, LocalDateTime to) {
+        public List<Slot> toAvailableSlots(FixedTimeInterval timeInterval) {
             List<Slot> slots = new ArrayList<>();
-            slots.add(new Slot(from, to));
+            slots.add(new Slot(timeInterval));
             return slots;
         }
 

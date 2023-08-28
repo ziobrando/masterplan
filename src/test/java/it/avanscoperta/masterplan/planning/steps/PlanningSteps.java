@@ -1,15 +1,18 @@
 package it.avanscoperta.masterplan.planning.steps;
 
 import io.cucumber.java.en.*;
+import it.avanscoperta.masterplan.common.domain.FixedTimeInterval;
 import it.avanscoperta.masterplan.common.domain.Priority;
 import it.avanscoperta.masterplan.common.steps.ScenarioContext;
 import it.avanscoperta.masterplan.configuration.domain.UserId;
 import it.avanscoperta.masterplan.planning.domain.PlannedActivity;
 import it.avanscoperta.masterplan.planning.query.PersonalAvailabilityRepository;
 import it.avanscoperta.masterplan.planning.query.PersonalAvailabilityView;
+import it.avanscoperta.masterplan.planning.query.RequestInterval;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -31,9 +34,11 @@ public class PlanningSteps {
                         () -> personalAvailabilityRepository.findByUserId(userId).isPresent()
                 );
         PersonalAvailabilityView personalAvailabilityView = personalAvailabilityRepository.findByUserId(userId).get();
-
+        RequestInterval requestInterval = new RequestInterval(new FixedTimeInterval(
+                LocalDateTime.now(), LocalDateTime.now().plusMonths(3)
+        ));
         PlannedActivity meeting = new PlannedActivity(Duration.ofMinutes(90), Priority.STANDARD);
-        assertTrue(personalAvailabilityView.isAvailableFor(meeting));
+        assertTrue(personalAvailabilityView.isAvailableFor(meeting, requestInterval));
     }
 
     @Given("{string} is completely busy next week")

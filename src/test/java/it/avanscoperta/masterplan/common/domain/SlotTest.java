@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,8 +41,8 @@ public class SlotTest {
     }
 
     @Test
-    @DisplayName("Can check availability")
-    void can_check_availability() {
+    @DisplayName("Can check availability for floating activities")
+    void can_check_availability_for_floating_activities() {
         PlannedActivity twentyFiveHoursActivity = new PlannedActivity(Duration.ofHours(25));
         PlannedActivity twentyFourHoursActivity = new PlannedActivity(Duration.ofHours(24));
 
@@ -49,5 +50,15 @@ public class SlotTest {
         assertTrue(fullDayTomorrow.hasRoomFor(twentyFourHoursActivity));
         assertFalse(fullDayTomorrow.hasRoomFor(twentyFiveHoursActivity));
     }
+
+
+    @Test
+    @DisplayName("Can check availability for anchored activities")
+    void can_check_availability_for_anchored_activities() {
+        PlannedActivity fourHoursInTheMorning = new PlannedActivity(Duration.ofHours(4)).happeningBetween(LocalTime.of(8,0), LocalTime.of(13, 30));
+
+        assertTrue(fullDayTomorrow.hasRoomFor(fourHoursInTheMorning));
+    }
+
 
 }

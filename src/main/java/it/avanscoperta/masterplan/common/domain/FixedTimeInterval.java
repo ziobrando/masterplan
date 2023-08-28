@@ -1,5 +1,6 @@
 package it.avanscoperta.masterplan.common.domain;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -29,5 +30,9 @@ public record FixedTimeInterval(LocalDateTime fromTime, LocalDateTime toTime) {
 
     public boolean startsBeforeThan(FixedTimeInterval other) {
         return this.fromTime.isBefore(other.fromTime);
+    }
+
+    public Duration duration() {
+        return Duration.between(fromTime, toTime);
     }
 }

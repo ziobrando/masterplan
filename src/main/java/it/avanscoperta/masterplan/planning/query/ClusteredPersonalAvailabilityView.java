@@ -1,7 +1,10 @@
 package it.avanscoperta.masterplan.planning.query;
 
+import it.avanscoperta.masterplan.common.domain.FixedTimeInterval;
+import it.avanscoperta.masterplan.common.domain.Slot;
 import it.avanscoperta.masterplan.configuration.domain.PlanningHorizon;
 import it.avanscoperta.masterplan.configuration.domain.UserId;
+import it.avanscoperta.masterplan.design.domain.AvailabilityConstraint;
 import it.avanscoperta.masterplan.planning.domain.PlannedActivity;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -10,8 +13,10 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -53,6 +58,26 @@ public class ClusteredPersonalAvailabilityView implements PersonalAvailabilityVi
                 .eventsForDay.events.contains(plannedEvent);
     }
 
+    @Override
+    public Optional<LocalDate> firstAvailableDate(PlannedActivity plannedActivity, RequestInterval requestInterval) {
+        return availableDays.stream()
+                .filter((day) ->
+                            day.hasRoomFor(plannedActivity, requestInterval)
+                        )
+                .findFirst()
+                .map(availableDay -> availableDay.day);
+    }
+
+    @Override
+    public Optional<Slot> firstAvailableSlot(PlannedActivity plannedActivity, RequestInterval requestInterval) {
+        throw new RuntimeException("Not Yet");
+    }
+
+    @Override
+    public void registerConstraint(AvailabilityConstraint availabilityConstraint) {
+
+    }
+
     public ClusteredPersonalAvailabilityView(
             @NotNull
             String personalAvailabilityId,
@@ -83,16 +108,28 @@ public class ClusteredPersonalAvailabilityView implements PersonalAvailabilityVi
     }
 
     @Override
-    public boolean isAvailableFor(PlannedActivity plannedActivity) {
+    public boolean isAvailableFor(PlannedActivity plannedActivity, RequestInterval requestInterval) {
         AtomicBoolean result = new AtomicBoolean(false);
+        // TODO: need to filter for Request Interval
         availableDays.forEach(
                 (day) -> {
-                    if (day.hasRoomFor(plannedActivity)) {
+                    if (day.hasRoomFor(plannedActivity, requestInterval)) {
                         result.set(true);
                         logger.debug("Found availability on day: " + day);
                     }
                 }
         );
         return result.get();
+    }
+
+    @Override
+    public boolean isAvailableFor(PlannedActivity plannedActivity) {
+        return isAvailableFor(plannedActivity, defaultRequestInterval());
+    }
+
+    private RequestInterval defaultRequestInterval() {
+        return new RequestInterval(new FixedTimeInterval(
+                LocalDateTime.now(), LocalDateTime.now().plusDays(planningHorizon.duration().days())
+        ));
     }
 }
