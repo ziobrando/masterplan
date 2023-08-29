@@ -12,6 +12,10 @@ import java.time.LocalDateTime;
  */
 public record FixedTimeInterval(LocalDateTime fromTime, LocalDateTime toTime) {
 
+    public FixedTimeInterval {
+        if(fromTime.isAfter(toTime)) throw new IllegalArgumentException("Extremes are in the wrong order");
+    }
+
     public boolean includes(LocalDate day) {
         return fromTime.isBefore(day.atStartOfDay()) && toTime.isAfter(day.plusDays(1).atStartOfDay());
     }
