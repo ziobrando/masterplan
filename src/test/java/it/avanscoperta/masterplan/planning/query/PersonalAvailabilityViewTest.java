@@ -7,7 +7,7 @@ import it.avanscoperta.masterplan.configuration.domain.PlanningHorizon;
 import it.avanscoperta.masterplan.configuration.domain.UserId;
 import it.avanscoperta.masterplan.design.domain.AvailabilityConstraint;
 import it.avanscoperta.masterplan.planning.domain.PersonalAvailabilityId;
-import it.avanscoperta.masterplan.planning.domain.PlannedActivity;
+import it.avanscoperta.masterplan.planning.domain.PotentialActivity;
 import it.avanscoperta.masterplan.planning.domain.PlannedEventId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -82,8 +82,8 @@ public class PersonalAvailabilityViewTest {
     @MethodSource("alternativeImplementations")
     @DisplayName("A newly created one should have space available")
     public void a_fresh_one_should_be_always_available(PersonalAvailabilityView view) {
-        PlannedActivity plannedActivity = new PlannedActivity(Duration.ofHours(2), Priority.STANDARD);
-        assertTrue(view.isAvailableFor(plannedActivity));
+        PotentialActivity potentialActivity = new PotentialActivity(Duration.ofHours(2), Priority.STANDARD);
+        assertTrue(view.isAvailableFor(potentialActivity));
     }
 
     @ParameterizedTest
@@ -97,7 +97,7 @@ public class PersonalAvailabilityViewTest {
         PlannedEvent plannedEvent = new PlannedEvent(PlannedEventId.generate(), "Test Event", tomorrowMorning);
 
         view.reserveEvent(plannedEvent);
-        PlannedActivity overlappingActivity = new PlannedActivity(Duration.ofHours(2), Priority.STANDARD);
+        PotentialActivity overlappingActivity = new PotentialActivity(Duration.ofHours(2), Priority.STANDARD);
 
         assertTrue(view.includesEvent(plannedEvent));
     }
@@ -112,7 +112,7 @@ public class PersonalAvailabilityViewTest {
         AvailabilityConstraint flexibleWorkingHours = new AvailabilityConstraint();
 
         view.registerConstraint(flexibleWorkingHours);
-        PlannedActivity overlappingActivity = new PlannedActivity(Duration.ofHours(2), Priority.STANDARD);
+        PotentialActivity overlappingActivity = new PotentialActivity(Duration.ofHours(2), Priority.STANDARD);
 
         //assertTrue(view.hasConstraint(flexibleWorkingHours));
     }
@@ -126,7 +126,7 @@ public class PersonalAvailabilityViewTest {
         assertEquals(Duration.ofDays(1), fullDayEvent.fixedTimeInterval().duration());
         view.reserveEvent(fullDayEvent);
 
-        PlannedActivity overlappingActivity = new PlannedActivity(Duration.ofHours(24), Priority.STANDARD);
+        PotentialActivity overlappingActivity = new PotentialActivity(Duration.ofHours(24), Priority.STANDARD);
         RequestInterval requestInterval = new RequestInterval(
                 new FixedTimeInterval(LocalDateTime.now(), LocalDateTime.now().plusMonths(2))
         );
@@ -152,7 +152,7 @@ public class PersonalAvailabilityViewTest {
         PlannedEvent plannedEvent = new PlannedEvent(PlannedEventId.generate(), "Test Event", fullDayTomorrow);
 
         view.reserveEvent(plannedEvent);
-        PlannedActivity overlappingActivity = new PlannedActivity(Duration.ofHours(2), Priority.STANDARD);
+        PotentialActivity overlappingActivity = new PotentialActivity(Duration.ofHours(2), Priority.STANDARD);
         RequestInterval requestInterval = new RequestInterval(
                 new FixedTimeInterval(LocalDateTime.now(), LocalDateTime.now().plusMonths(2))
         );

@@ -5,7 +5,7 @@ import it.avanscoperta.masterplan.common.domain.Slot;
 import it.avanscoperta.masterplan.configuration.domain.PlanningHorizon;
 import it.avanscoperta.masterplan.configuration.domain.UserId;
 import it.avanscoperta.masterplan.design.domain.AvailabilityConstraint;
-import it.avanscoperta.masterplan.planning.domain.PlannedActivity;
+import it.avanscoperta.masterplan.planning.domain.PotentialActivity;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,11 +67,11 @@ public class ContinuousPersonalAvailabilityView implements PersonalAvailabilityV
     }
 
     @Override
-    public boolean isAvailableFor(PlannedActivity plannedActivity, RequestInterval requestInterval) {
+    public boolean isAvailableFor(PotentialActivity potentialActivity, RequestInterval requestInterval) {
         AtomicBoolean result = new AtomicBoolean(false);
 
         availableSlots(requestInterval.fixedTimeInterval()).forEach(
-                (slot) -> { if (slot.hasRoomFor(plannedActivity)) {
+                (slot) -> { if (slot.hasRoomFor(potentialActivity)) {
                     result.set(true);
                     logger.debug("Found availability on slot: " + slot);
                 }}
@@ -81,22 +81,22 @@ public class ContinuousPersonalAvailabilityView implements PersonalAvailabilityV
     }
 
     @Override
-    public boolean isAvailableFor(PlannedActivity plannedActivity) {
-        return isAvailableFor(plannedActivity, defaultRequestInterval());
+    public boolean isAvailableFor(PotentialActivity potentialActivity) {
+        return isAvailableFor(potentialActivity, defaultRequestInterval());
     }
 
     @Override
-    public Optional<Slot> firstAvailableSlot(PlannedActivity plannedActivity, RequestInterval requestInterval) {
+    public Optional<Slot> firstAvailableSlot(PotentialActivity potentialActivity, RequestInterval requestInterval) {
         return availableSlots(requestInterval.fixedTimeInterval())
                 .stream().sequential()
-                .filter((slot -> slot.hasRoomFor(plannedActivity)))
+                .filter((slot -> slot.hasRoomFor(potentialActivity)))
                 .findFirst();
     }
 
 
     @Override
-    public Optional<LocalDate> firstAvailableDate(PlannedActivity plannedActivity, RequestInterval requestInterval) {
-        return firstAvailableSlot(plannedActivity, requestInterval)
+    public Optional<LocalDate> firstAvailableDate(PotentialActivity potentialActivity, RequestInterval requestInterval) {
+        return firstAvailableSlot(potentialActivity, requestInterval)
                 .map((slot -> slot.timeInterval().fromTime().toLocalDate()));
     }
 

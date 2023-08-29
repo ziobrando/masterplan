@@ -3,13 +3,14 @@ package it.avanscoperta.masterplan.planning.query;
 import it.avanscoperta.masterplan.common.domain.FixedTimeInterval;
 import it.avanscoperta.masterplan.common.domain.Priority;
 import it.avanscoperta.masterplan.common.domain.Slot;
-import it.avanscoperta.masterplan.planning.domain.PlannedActivity;
+import it.avanscoperta.masterplan.planning.domain.PotentialActivity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BinaryOperator;
 
 /**
  * Massively exploratory coding.
@@ -26,13 +27,17 @@ public class AvailableDay {
         this.day = day;
     }
 
-
-    public boolean hasRoomFor(PlannedActivity plannedActivity, RequestInterval requestInterval) {
-
-        logger.warn("Running a mocked up implementation");
-        this.availableSlots(plannedActivity.priority()).stream();
-        // FIXME: this calls for a Slot-based implementation.
-        return plannedActivity.duration().toMinutes() < 240;
+    /**
+     *
+     * @param potentialActivity the <code>PotentialActivity</code> to be planned.
+     * @param requestInterval
+     * @return <code>true</code> if the day has space for the <code>PotentialActivity</code>
+     */
+    public boolean hasRoomFor(PotentialActivity potentialActivity, RequestInterval requestInterval) {
+        return this.availableSlots(potentialActivity.priority())
+                .stream()
+                .map((slot -> slot.hasRoomFor(potentialActivity)))
+                .reduce(Boolean.FALSE, Boolean::logicalOr);
     }
 
     private List<Slot> availableSlots(Priority priority) {

@@ -5,7 +5,7 @@ import it.avanscoperta.masterplan.common.domain.Slot;
 import it.avanscoperta.masterplan.configuration.domain.PlanningHorizon;
 import it.avanscoperta.masterplan.configuration.domain.UserId;
 import it.avanscoperta.masterplan.design.domain.AvailabilityConstraint;
-import it.avanscoperta.masterplan.planning.domain.PlannedActivity;
+import it.avanscoperta.masterplan.planning.domain.PotentialActivity;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,17 +59,17 @@ public class ClusteredPersonalAvailabilityView implements PersonalAvailabilityVi
     }
 
     @Override
-    public Optional<LocalDate> firstAvailableDate(PlannedActivity plannedActivity, RequestInterval requestInterval) {
+    public Optional<LocalDate> firstAvailableDate(PotentialActivity potentialActivity, RequestInterval requestInterval) {
         return availableDays.stream()
                 .filter((day) ->
-                            day.hasRoomFor(plannedActivity, requestInterval)
+                            day.hasRoomFor(potentialActivity, requestInterval)
                         )
                 .findFirst()
                 .map(availableDay -> availableDay.day);
     }
 
     @Override
-    public Optional<Slot> firstAvailableSlot(PlannedActivity plannedActivity, RequestInterval requestInterval) {
+    public Optional<Slot> firstAvailableSlot(PotentialActivity potentialActivity, RequestInterval requestInterval) {
         throw new RuntimeException("Not Yet");
     }
 
@@ -108,12 +108,12 @@ public class ClusteredPersonalAvailabilityView implements PersonalAvailabilityVi
     }
 
     @Override
-    public boolean isAvailableFor(PlannedActivity plannedActivity, RequestInterval requestInterval) {
+    public boolean isAvailableFor(PotentialActivity potentialActivity, RequestInterval requestInterval) {
         AtomicBoolean result = new AtomicBoolean(false);
         // TODO: need to filter for Request Interval
         availableDays.forEach(
                 (day) -> {
-                    if (day.hasRoomFor(plannedActivity, requestInterval)) {
+                    if (day.hasRoomFor(potentialActivity, requestInterval)) {
                         result.set(true);
                         logger.debug("Found availability on day: " + day);
                     }
@@ -123,8 +123,8 @@ public class ClusteredPersonalAvailabilityView implements PersonalAvailabilityVi
     }
 
     @Override
-    public boolean isAvailableFor(PlannedActivity plannedActivity) {
-        return isAvailableFor(plannedActivity, defaultRequestInterval());
+    public boolean isAvailableFor(PotentialActivity potentialActivity) {
+        return isAvailableFor(potentialActivity, defaultRequestInterval());
     }
 
     private RequestInterval defaultRequestInterval() {

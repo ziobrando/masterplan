@@ -5,7 +5,7 @@ import it.avanscoperta.masterplan.common.domain.FixedTimeInterval;
 import it.avanscoperta.masterplan.common.domain.Priority;
 import it.avanscoperta.masterplan.common.steps.ScenarioContext;
 import it.avanscoperta.masterplan.configuration.domain.UserId;
-import it.avanscoperta.masterplan.planning.domain.PlannedActivity;
+import it.avanscoperta.masterplan.planning.domain.PotentialActivity;
 import it.avanscoperta.masterplan.planning.query.PersonalAvailabilityRepository;
 import it.avanscoperta.masterplan.planning.query.PersonalAvailabilityView;
 import it.avanscoperta.masterplan.planning.query.RequestInterval;
@@ -37,7 +37,7 @@ public class PlanningSteps {
         RequestInterval requestInterval = new RequestInterval(new FixedTimeInterval(
                 LocalDateTime.now(), LocalDateTime.now().plusMonths(3)
         ));
-        PlannedActivity meeting = new PlannedActivity(Duration.ofMinutes(90), Priority.STANDARD);
+        PotentialActivity meeting = new PotentialActivity(Duration.ofMinutes(90), Priority.STANDARD);
         assertTrue(personalAvailabilityView.isAvailableFor(meeting, requestInterval));
     }
 

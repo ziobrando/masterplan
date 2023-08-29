@@ -1,6 +1,6 @@
 package it.avanscoperta.masterplan.common.domain;
 
-import it.avanscoperta.masterplan.planning.domain.PlannedActivity;
+import it.avanscoperta.masterplan.planning.domain.PotentialActivity;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -16,9 +16,11 @@ public record Slot(FixedTimeInterval timeInterval) {
         this(new FixedTimeInterval(from, to));
     }
 
-    public boolean hasRoomFor(PlannedActivity plannedActivity) {
-        return this.toDuration().compareTo(plannedActivity.duration()) >= 0;
+    public boolean hasRoomFor(PotentialActivity potentialActivity) {
+        return potentialActivity.fitsInto(this);
     }
+
+
 
     private Duration toDuration() {
         return Duration.between(timeInterval.fromTime(), timeInterval.toTime());
