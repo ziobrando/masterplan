@@ -39,4 +39,8 @@ public record FixedTimeInterval(LocalDateTime fromTime, LocalDateTime toTime) {
     public Duration duration() {
         return Duration.between(fromTime, toTime);
     }
+
+    public boolean overlaps(FixedTimeInterval interval) {
+        throw new RuntimeException("Not finished, well... not even started.");
+    }
 }

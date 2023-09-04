@@ -53,5 +53,14 @@ public class PotentialActivity {
     public Priority priority() {
         return priority;
     }
+
+    @Override
+    public String toString() {
+        return "PotentialActivity{" +
+                "duration=" + duration +
+                ", priority=" + priority +
+                ", constraints=" + constraints +
+                '}';
+    }
 }
 

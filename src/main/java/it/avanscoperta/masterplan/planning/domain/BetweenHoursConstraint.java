@@ -36,5 +36,11 @@ public record BetweenHoursConstraint(
                 potentialSlot.timeInterval().toTime().toLocalTime().isAfter(dailyStart);
     }
 
-
+    @Override
+    public String toString() {
+        return "BetweenHoursConstraint{" +
+                ", dailyStart=" + dailyStart +
+                ", dailyEnd=" + dailyEnd +
+                '}';
+    }
 }
